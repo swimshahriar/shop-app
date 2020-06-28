@@ -4,9 +4,9 @@ const { body } = require('express-validator');
 
 const productsController = require('../controllers/products-controller');
 
-router.get('/getProducts', productsController.getProducts);
+router.get('/', productsController.getProducts);
 router.post(
-  '/addProduct',
+  '/add',
   [
     body('name').not().isEmpty(),
     body('description').isLength({ min: 10 }),
@@ -16,10 +16,10 @@ router.post(
   productsController.addProduct
 );
 router.patch(
-  '/editProduct/:pid',
+  '/edit/:pid',
   [body('description').isLength({ min: 10 }), body('price').not().isEmpty()],
-  productsController.addProduct
+  productsController.editProduct
 );
-router.delete('/deleteProduct', productsController.addProduct);
+router.delete('/delete/:pid', productsController.deleteProduct);
 
 module.exports = router;

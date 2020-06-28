@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 
 const User = require('../models/users-model');
 
+// Signup User
 const signUpUser = async (req, res, next) => {
   const { name, email, password } = req.body;
 
@@ -37,6 +38,7 @@ const signUpUser = async (req, res, next) => {
   }
 };
 
+// Login User
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -56,7 +58,6 @@ const loginUser = async (req, res, next) => {
 
   if (!existingUser) {
     const err = new Error('Email not found!');
-
     return next(err);
   }
 

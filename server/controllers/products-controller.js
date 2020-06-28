@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator');
 
 const Product = require('../models/products-model');
 
+// Get all the Products
 const getProducts = async (req, res, next) => {
   try {
     const products = await Product.find();
@@ -13,6 +14,7 @@ const getProducts = async (req, res, next) => {
   }
 };
 
+// Add a Product
 const addProduct = async (req, res, next) => {
   const { name, description, price, imageURL } = req.body;
 
@@ -38,46 +40,68 @@ const addProduct = async (req, res, next) => {
   }
 };
 
+// Edit a Product
 const editProduct = async (req, res, next) => {
-  const productId = req.params.pid;
+  const pid = req.params.pid;
   const { description, price } = req.body;
 
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    throw new Error(errors.array());
+    res.json({ errors: errors.array() });
   }
 
   let existingProduct;
   try {
-    existingProduct = await Product.findOne({
-      _id: ObjectId(productId),
-    });
-    res.json({
-      editedProduct: existingProduct,
-    });
+    existingProduct = await Product.findById(pid);
   } catch (error) {
     const err = new Error(error.message);
     return next(err);
   }
 
   if (!existingProduct) {
-    throw new Error('No Product Found!');
+    const error = new Error('No Product Found!');
+    return next(error);
   }
 
   existingProduct.description = description;
   existingProduct.price = price;
 
   try {
-    await existingProduct.save();
-    res.json({ editedProduct: existingProduct });
+    const editedProduct = await existingProduct.save();
+    res.json({ editedProduct: editedProduct });
   } catch (error) {
     const err = new Error(error.message);
     return next(err);
   }
 };
 
-const deleteProduct = (req, res, next) => {};
+// Delete a Product
+const deleteProduct = async (req, res, next) => {
+  const pid = req.params.pid;
+
+  let product;
+  try {
+    product = await Product.findById(pid);
+  } catch (error) {
+    const err = new Error(error.message);
+    return next(err);
+  }
+
+  if (!product) {
+    const error = new Error('No product found!');
+    return next(error);
+  }
+
+  try {
+    await product.remove();
+
+    res.json({ message: 'Product Deleted!' });
+  } catch (error) {
+    const err = new Error(error.message);
+    return next(err);
+  }
+};
 
 exports.getProducts = getProducts;
 exports.addProduct = addProduct;
