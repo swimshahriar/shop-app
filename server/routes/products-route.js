@@ -3,8 +3,12 @@ const router = express.Router();
 const { body } = require('express-validator');
 
 const productsController = require('../controllers/products-controller');
+const checkAuth = require('../middlewares/check-auth');
 
 router.get('/', productsController.getProducts);
+
+router.use(checkAuth);
+
 router.post(
   '/add',
   [

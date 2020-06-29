@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const logger = require('morgan');
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 const usersRoute = require('./routes/users-route');
 const productsRoute = require('./routes/products-route');
@@ -37,7 +38,7 @@ app.use((error, req, res, next) => {
 const port = process.env.PORT || 8000;
 
 mongoose
-  .connect('mongodb://localhost:27017/shopApp', {
+  .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,

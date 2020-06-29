@@ -6,6 +6,7 @@ const productSchema = new mongoose.Schema({
   description: { type: String, required: true, minlenth: 10 },
   price: { type: Number, required: true },
   imageURL: { type: String, required: true },
+  userId: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
 });
 
 productSchema.plugin(uniqueValidator);

@@ -1,22 +1,30 @@
 const { validationResult } = require('express-validator');
+const mongoose = require('mongoose');
 
 const Product = require('../models/products-model');
+const User = require('../models/users-model');
 
 // Get all the Products
 const getProducts = async (req, res, next) => {
+  let products;
   try {
-    const products = await Product.find();
-
-    res.json({ products: products });
+    products = await Product.find();
   } catch (error) {
     const err = new Error(error.message);
     return next(err);
   }
+
+  if (!products) {
+    const error = new Error('No products found!');
+    return next(error);
+  }
+
+  res.json({ products: products });
 };
 
 // Add a Product
 const addProduct = async (req, res, next) => {
-  const { name, description, price, imageURL } = req.body;
+  const { name, description, price, imageURL, userId } = req.body;
 
   const errors = validationResult(req);
 
@@ -24,20 +32,40 @@ const addProduct = async (req, res, next) => {
     res.json({ errors: errors.array() });
   }
 
+  let user;
+  try {
+    user = await User.findById(userId);
+  } catch (error) {
+    const err = new Error(error.message);
+    return next(err);
+  }
+
+  if (!user) {
+    const err = new Error('User not found!');
+    return next(err);
+  }
+
   const createdProduct = new Product({
     name,
     description,
     price,
     imageURL,
+    userId,
   });
 
   try {
-    const savedProduct = await createdProduct.save();
-    res.json({ product: savedProduct });
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    await createdProduct.save({ session });
+    user.products.push(createdProduct);
+    await user.save({ session });
+    await session.commitTransaction();
   } catch (error) {
     const err = new Error(error.message);
     return next(err);
   }
+
+  res.json({ message: 'Product added successfully!', product: createdProduct });
 };
 
 // Edit a Product
@@ -68,12 +96,16 @@ const editProduct = async (req, res, next) => {
   existingProduct.price = price;
 
   try {
-    const editedProduct = await existingProduct.save();
-    res.json({ editedProduct: editedProduct });
+    await existingProduct.save();
   } catch (error) {
     const err = new Error(error.message);
     return next(err);
   }
+
+  res.json({
+    message: 'Product edited successfully!',
+    editedProduct: existingProduct,
+  });
 };
 
 // Delete a Product
@@ -82,7 +114,7 @@ const deleteProduct = async (req, res, next) => {
 
   let product;
   try {
-    product = await Product.findById(pid);
+    product = await Product.findById(pid).populate('userId');
   } catch (error) {
     const err = new Error(error.message);
     return next(err);
@@ -94,13 +126,18 @@ const deleteProduct = async (req, res, next) => {
   }
 
   try {
-    await product.remove();
-
-    res.json({ message: 'Product Deleted!' });
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    await product.remove({ session });
+    product.userId.products.pull(product);
+    await product.userId.save({ session });
+    await session.commitTransaction();
   } catch (error) {
     const err = new Error(error.message);
     return next(err);
   }
+
+  res.json({ message: 'Product Deleted!' });
 };
 
 exports.getProducts = getProducts;

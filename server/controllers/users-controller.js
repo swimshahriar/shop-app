@@ -1,5 +1,7 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const User = require('../models/users-model');
 
@@ -26,16 +28,31 @@ const signUpUser = async (req, res, next) => {
     name,
     email,
     password: hashedPass,
+    orders: [],
+    products: [],
   });
 
   try {
     await createdUser.save();
-    res.json({ user: createdUser });
   } catch (error) {
     const err = new Error(error.message);
 
     return next(err);
   }
+
+  let token;
+  try {
+    token = jwt.sign(
+      { userId: createdUser.id, email: createdUser.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '3h' }
+    );
+  } catch (error) {
+    const err = new Error(error.message);
+    return next(err);
+  }
+
+  res.json({ userId: createdUser.id, email: createdUser.email, token: token });
 };
 
 // Login User
@@ -76,9 +93,22 @@ const loginUser = async (req, res, next) => {
     return next(err);
   }
 
+  let token;
+  try {
+    token = jwt.sign(
+      { userId: existingUser.id, email: existingUser.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '3h' }
+    );
+  } catch (error) {
+    const err = new Error(error.message);
+    return next(err);
+  }
+
   res.json({
-    message: 'Loged In',
-    user: existingUser,
+    userId: existingUser.id,
+    email: existingUser.email,
+    token: token,
   });
 };
 

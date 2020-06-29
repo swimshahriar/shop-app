@@ -1,12 +1,14 @@
-const Order = require('../models/orders-model');
 const { validationResult } = require('express-validator');
+const mongoose = require('mongoose');
+
+const Order = require('../models/orders-model');
+const User = require('../models/users-model');
 
 // Get All the Orders
 const getOrders = async (req, res, next) => {
   let orders;
   try {
     orders = await Order.find();
-    res.json({ orders: orders });
   } catch (error) {
     const err = new Error(error.message);
     return next(err);
@@ -15,6 +17,7 @@ const getOrders = async (req, res, next) => {
   if (!orders) {
     res.json({ message: 'No orders Found!😭' });
   }
+  res.json({ orders: orders });
 };
 
 // Place an Order
@@ -27,7 +30,20 @@ const placeOrder = async (req, res, next) => {
     res.json({ errors: errors.array() });
   }
 
-  const order = new Order({
+  let user;
+  try {
+    user = await User.findById(userId);
+  } catch (error) {
+    const err = new Error(error.message);
+    return next(err);
+  }
+
+  if (!user) {
+    const err = new Error('User not found!');
+    return next(err);
+  }
+
+  const createdOrder = new Order({
     items,
     totalPrice,
     address,
@@ -35,12 +51,17 @@ const placeOrder = async (req, res, next) => {
   });
 
   try {
-    await order.save();
-    res.json({ message: 'Order placed successfully', order: order });
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    await createdOrder.save({ session });
+    user.orders.push(createdOrder);
+    await user.save({ session });
+    await session.commitTransaction();
   } catch (error) {
     const err = new Error(error.message);
     return next(err);
   }
+  res.json({ message: 'Order placed successfully', order: createdOrder });
 };
 
 // Change the Order status
@@ -78,20 +99,22 @@ const editOrderStatus = async (req, res, next) => {
 
   try {
     await existingOrder.save();
-    res.json({ message: 'Order Status changed!', updatedOrder: existingOrder });
   } catch (error) {
     const err = new Error(error.message);
     return next(err);
   }
+
+  res.json({ message: 'Order Status changed!', updatedOrder: existingOrder });
 };
 
 // Delete an Order
 const deleteOrder = async (req, res, next) => {
   const { oid } = req.params;
+  const { userId } = req.body;
 
   let existingOrder;
   try {
-    existingOrder = await Order.findById(oid);
+    existingOrder = await Order.findById(oid).populate('userId');
   } catch (error) {
     const err = new Error(error.message);
     return next(err);
@@ -103,12 +126,18 @@ const deleteOrder = async (req, res, next) => {
   }
 
   try {
-    existingOrder.remove();
-    res.json({ message: 'Order Removed!' });
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    await existingOrder.remove({ session });
+    existingOrder.userId.orders.pull(existingOrder);
+    await existingOrder.userId.save({ session });
+    await session.commitTransaction();
   } catch (error) {
     const err = new Error(error.message);
     return next(err);
   }
+
+  res.json({ message: 'Order Removed!' });
 };
 
 exports.getOrders = getOrders;

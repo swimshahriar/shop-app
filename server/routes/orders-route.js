@@ -3,15 +3,18 @@ const router = express.Router();
 const { body } = require('express-validator');
 
 const ordersController = require('../controllers/orders-controller');
+const checkAuth = require('../middlewares/check-auth');
 
 router.get('/', ordersController.getOrders);
+
+router.use(checkAuth);
+
 router.post(
   '/place',
   [
     body('items').not().isEmpty(),
     body('totalPrice').not().isEmpty(),
     body('address').not().isEmpty(),
-    body('userId').not().isEmpty(),
   ],
   ordersController.placeOrder
 );
