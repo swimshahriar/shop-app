@@ -6,10 +6,10 @@ import {
   Redirect,
 } from 'react-router-dom';
 
-import Products from './Products/Pages/Products';
-import ManageProduct from './Products/Pages/ManageProduct';
-import Auth from './Users/Pages/Auth';
-import Cart from './Users/Pages/Cart';
+import AllProducts from './products/pages/AllProducts';
+import Cart from './orders/pages/Cart';
+import Auth from './users/pages/Auth';
+import Dashboard from './users/pages/Dashboard';
 import './App.css';
 
 const App = () => {
@@ -17,16 +17,16 @@ const App = () => {
     <Router>
       <Switch>
         <Route path="/" exact>
-          <Products />
+          <AllProducts />
         </Route>
-        <Route path="/manage" exact>
-          <ManageProduct />
+        <Route path="/cart" exact>
+          <Cart />
         </Route>
         <Route path="/auth" exact>
           <Auth />
         </Route>
-        <Route path="/cart" exact>
-          <Cart />
+        <Route path="/user/dashboard" exact>
+          <Dashboard />
         </Route>
         <Redirect to="/" />
       </Switch>
