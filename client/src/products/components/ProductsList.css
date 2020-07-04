@@ -1,0 +1,7 @@
+.products-list {
+  margin: 7rem auto;
+
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}

@@ -1,0 +1,21 @@
+.auth {
+  font-family: inherit;
+  font-size: 1.5rem;
+  width: 90%;
+  max-width: 40rem;
+  margin: 7rem auto;
+  background-color: #fff;
+}
+
+.auth h2 {
+  padding: 2rem;
+}
+
+.auth form {
+  margin-bottom: 1rem;
+  padding: 2rem;
+}
+
+.switch-btn {
+  padding: 1rem;
+}

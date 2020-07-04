@@ -1,0 +1,13 @@
+.product-form {
+  font-family: inherit;
+  font-size: 1.5rem;
+  position: relative;
+  list-style: none;
+  margin: 7rem auto;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 40rem;
+  box-shadow: 0 2px 0.8rem rgba(0, 0, 0, 0.26);
+  border-radius: 1rem;
+  background: #fff;
+}
