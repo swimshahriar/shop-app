@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -13,36 +13,65 @@ import NewProduct from './products/pages/NewProduct';
 import UpdateProduct from './products/pages/UpdateProduct';
 import Auth from './users/pages/Auth';
 import Dashboard from './users/pages/Dashboard';
+import { AuthContext } from './shared/context/auth-context';
 import './App.css';
 
 const App = () => {
+  const [isLogin, setIsLogin] = useState(false);
+
+  const login = useCallback(() => {
+    setIsLogin(true);
+  }, []);
+
+  const logout = useCallback(() => {
+    setIsLogin(false);
+  }, []);
+
+  let routes;
+
+  if (!isLogin) {
+    routes = (
+      <Switch>
+        <Route path="/" exact>
+          <AllProducts />
+        </Route>
+        <Route path="/auth" exact>
+          <Auth />
+        </Route>
+        <Route path="/cart" exact>
+          <Cart />
+        </Route>
+        <Redirect to="/auth" />
+      </Switch>
+    );
+  } else {
+    routes = (
+      <Switch>
+        <Route path="/" exact>
+          <AllProducts />
+        </Route>
+        <Route path="/add" exact>
+          <NewProduct />
+        </Route>
+        <Route path="/update/:pid" exact>
+          <UpdateProduct />
+        </Route>
+        <Route path="/dashboard" exact>
+          <Dashboard />
+        </Route>
+        <Redirect to="/" />
+      </Switch>
+    );
+  }
   return (
-    <Router>
-      <MainNavigation />
-      <main>
-        <Switch>
-          <Route path="/" exact>
-            <AllProducts />
-          </Route>
-          <Route path="/cart" exact>
-            <Cart />
-          </Route>
-          <Route path="/add" exact>
-            <NewProduct />
-          </Route>
-          <Route path="/update/:pid" exact>
-            <UpdateProduct />
-          </Route>
-          <Route path="/auth" exact>
-            <Auth />
-          </Route>
-          <Route path="/dashboard" exact>
-            <Dashboard />
-          </Route>
-          <Redirect to="/" />
-        </Switch>
-      </main>
-    </Router>
+    <AuthContext.Provider
+      value={{ isLogedIn: isLogin, login: login, logout: logout }}
+    >
+      <Router>
+        <MainNavigation />
+        <main>{routes}</main>
+      </Router>
+    </AuthContext.Provider>
   );
 };
 
