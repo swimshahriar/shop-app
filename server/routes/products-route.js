@@ -7,7 +7,7 @@ const checkAuth = require('../middlewares/check-auth');
 
 router.get('/', productsController.getProducts);
 
-router.use(checkAuth);
+// router.use(checkAuth);
 
 router.post(
   '/add',

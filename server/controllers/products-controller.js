@@ -19,7 +19,7 @@ const getProducts = async (req, res, next) => {
     return next(error);
   }
 
-  res.json({ products: products });
+  res.json(products);
 };
 
 // Add a Product

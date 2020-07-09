@@ -16,6 +16,17 @@ app.use(logger('tiny'));
 app.use(cors());
 app.use(express.json());
 
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
+
+  next();
+});
+
 // Routes
 app.use('/api/user', usersRoute);
 app.use('/api/product', productsRoute);
@@ -30,7 +41,6 @@ app.use((error, req, res, next) => {
   }
   res.json({
     message: error.message,
-    stack: process.env.NODE_ENV === 'production' ? '☕️' : error.stack,
   });
 });
 

@@ -33,10 +33,36 @@ const NewProduct = () => {
     false
   );
 
-  const addBtnHandler = (event) => {
+  const addBtnHandler = async (event) => {
     event.preventDefault();
-    console.log(formState.inputs);
+
+    try {
+      const response = await fetch('http://localhost:8000/api/product/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formState.inputs.productName.value,
+          imageURL: formState.inputs.productImage.value,
+          description: formState.inputs.productDescription.value,
+          price: formState.inputs.productPrice.value,
+          userId: '5ef89a73e8d61c35455f7043',
+        }),
+      });
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(response.message);
+      }
+      console.log(responseData);
+
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
   };
+
   return (
     <form className="product-form" onSubmit={addBtnHandler}>
       <Input

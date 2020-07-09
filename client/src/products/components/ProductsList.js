@@ -16,8 +16,8 @@ const ProductsList = (props) => {
     <div className="products-list">
       {props.products.map((product) => (
         <Product
-          key={product.id}
-          id={product.id}
+          key={product._id}
+          id={product._id}
           name={product.name}
           imageURL={product.imageURL}
           description={product.description}

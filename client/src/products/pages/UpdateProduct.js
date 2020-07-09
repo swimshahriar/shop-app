@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
 import Input from '../../shared/components/FormElements/Input';
@@ -10,27 +10,6 @@ import {
 } from '../../shared/util/validators';
 import { useForm } from '../../shared/hooks/form-hook';
 import './ProductForm.css';
-
-const DUMMY_Products = [
-  {
-    id: 'p1',
-    name: 'Empire State Building',
-    description: 'One of the most famous sky scrapers in the world!',
-    imageUrl:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/NYC_Empire_State_Building.jpg/640px-NYC_Empire_State_Building.jpg',
-    price: 20,
-    creator: 'u1',
-  },
-  {
-    id: 'p2',
-    name: 'Emp. State Building',
-    description: 'One of the most famous sky scrapers in the world!',
-    imageUrl:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/NYC_Empire_State_Building.jpg/640px-NYC_Empire_State_Building.jpg',
-    price: 20,
-    creator: 'u2',
-  },
-];
 
 const UpdateProduct = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -50,7 +29,7 @@ const UpdateProduct = () => {
     false
   );
 
-  const identifiedProduct = DUMMY_Products.find((p) => p.id === pid);
+  const identifiedProduct = {};
 
   useEffect(() => {
     if (identifiedProduct) {

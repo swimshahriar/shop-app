@@ -19,3 +19,9 @@
 .switch-btn {
   padding: 1rem;
 }
+
+.errorText {
+  color: red;
+  display: block;
+  margin: 0 auto;
+}
