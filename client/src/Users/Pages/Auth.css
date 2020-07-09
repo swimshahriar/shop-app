@@ -21,7 +21,8 @@
 }
 
 .errorText {
+  padding: 1rem;
   color: red;
-  display: block;
-  margin: 0 auto;
+  /* display: block;
+  margin: 0 auto; */
 }

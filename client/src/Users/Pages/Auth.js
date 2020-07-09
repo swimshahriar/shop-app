@@ -60,6 +60,7 @@ const Auth = () => {
   const authSubmitHandler = async (event) => {
     event.preventDefault();
     setIsLoading(true);
+    setErrorText(false);
 
     if (!isLoginMode) {
       try {
@@ -110,6 +111,7 @@ const Auth = () => {
       } catch (error) {
         setIsLoading(false);
         setErrorText(true);
+
         return error;
       }
     }
@@ -151,6 +153,7 @@ const Auth = () => {
           errorText="Please enter a valid password, at least 6 characters."
           onInput={inputHandler}
         />
+
         {isLoading ? (
           <div className="center">
             <CircularProgress color="secondary" />
@@ -172,7 +175,6 @@ const Auth = () => {
           </Button>
         </div>
       )}
-      
       {errorText && (
         <div className="center errorText">
           <p>Something is wrong!</p>
