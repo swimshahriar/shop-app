@@ -11,13 +11,13 @@ import {
 } from '../../shared/util/validators';
 import { useForm } from '../../shared/hooks/form-hook';
 import { AuthContext } from '../../shared/context/auth-context';
+import { useHttpClient } from '../../shared/hooks/http-hook';
 import './Auth.css';
 
 const Auth = () => {
   const auth = useContext(AuthContext);
   const [isLoginMode, setIsLoginMode] = useState(true);
-  const [errorText, setErrorText] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { sendRequest, isLoading, error, clearError } = useHttpClient();
 
   const [formState, inputHandler, setFormData] = useForm(
     {
@@ -59,64 +59,48 @@ const Auth = () => {
 
   const authSubmitHandler = async (event) => {
     event.preventDefault();
-    setIsLoading(true);
-    setErrorText(false);
+    clearError();
 
     if (!isLoginMode) {
       try {
-        const response = await fetch('http://localhost:8000/api/user/signup', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+        const responseData = await sendRequest(
+          'http://localhost:8000/api/user/signup',
+          'POST',
+          JSON.stringify({
             name: formState.inputs.name.value,
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
           }),
-        });
+          {
+            'Content-Type': 'application/json',
+          }
+        );
 
-        const responseData = await response.json();
-        console.log(responseData);
-        setIsLoading(false);
-
-        if (!response.ok) {
-          throw new Error(response.message);
-        }
-      } catch (error) {
-        setIsLoading(false);
-        setErrorText(true);
-        return new Error(error);
-      }
+        auth.login(
+          responseData.userId,
+          responseData.token
+        );
+      } catch (err) {}
     } else {
       try {
-        const response = await fetch('http://localhost:8000/api/user/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+        const responseData = await sendRequest(
+          'http://localhost:8000/api/user/login',
+          'POST',
+          JSON.stringify({
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
           }),
-        });
+          {
+            'Content-Type': 'application/json',
+          }
+        );
 
-        const responseData = await response.json();
-        console.log(responseData);
-
-        setIsLoading(false);
-        if (!response.ok) {
-          throw new Error(response.message);
-        }
-      } catch (error) {
-        setIsLoading(false);
-        setErrorText(true);
-
-        return error;
-      }
+        auth.login(
+          responseData.userId,
+          responseData.token
+        );
+      } catch (err) {}
     }
-
-    auth.login();
   };
 
   return (
@@ -175,9 +159,9 @@ const Auth = () => {
           </Button>
         </div>
       )}
-      {errorText && (
+      {error && (
         <div className="center errorText">
-          <p>Something is wrong!</p>
+          <p>{error}</p>
         </div>
       )}
     </Card>

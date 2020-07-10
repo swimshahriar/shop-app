@@ -41,6 +41,7 @@ app.use((error, req, res, next) => {
   }
   res.json({
     message: error.message,
+    stack: error.stack
   });
 });
 

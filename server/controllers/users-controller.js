@@ -15,6 +15,17 @@ const signUpUser = async (req, res, next) => {
     res.json({ errors: errors.array() });
   }
 
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      const err = new Error('Email already in use!');
+      return next(err);
+    }
+  } catch (error) {
+    const err = new Error(error.message);
+    return next(err);
+  }
+
   let hashedPass;
 
   try {
@@ -52,7 +63,10 @@ const signUpUser = async (req, res, next) => {
     return next(err);
   }
 
-  res.json({ userId: createdUser.id, email: createdUser.email, token: token });
+  res.json({
+    userId: createdUser.id,
+    token: token,
+  });
 };
 
 // Login User
@@ -107,7 +121,6 @@ const loginUser = async (req, res, next) => {
 
   res.json({
     userId: existingUser.id,
-    email: existingUser.email,
     token: token,
   });
 };

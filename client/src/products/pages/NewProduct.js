@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { useHistory } from 'react-router-dom';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button';
@@ -8,9 +10,13 @@ import {
   VALIDATOR_MIN,
 } from '../../shared/util/validators';
 import { useForm } from '../../shared/hooks/form-hook';
+import { AuthContext } from '../../shared/context/auth-context';
+import { useHttpClient } from '../../shared/hooks/http-hook';
 import './ProductForm.css';
 
 const NewProduct = () => {
+  const auth = useContext(AuthContext);
+  const { isLoading, error, clearError, sendRequest } = useHttpClient();
   const [formState, inputHandler] = useForm(
     {
       productName: {
@@ -33,34 +39,31 @@ const NewProduct = () => {
     false
   );
 
+  const history = useHistory();
+
   const addBtnHandler = async (event) => {
     event.preventDefault();
+    clearError();
 
     try {
-      const response = await fetch('http://localhost:8000/api/product/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      await sendRequest(
+        'http://localhost:8000/api/product/add',
+        'POST',
+        JSON.stringify({
           name: formState.inputs.productName.value,
           imageURL: formState.inputs.productImage.value,
           description: formState.inputs.productDescription.value,
           price: formState.inputs.productPrice.value,
-          userId: '5ef89a73e8d61c35455f7043',
+          userId: auth.userId,
         }),
-      });
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(response.message);
-      }
-      console.log(responseData);
-
-      return responseData;
-    } catch (error) {
-      console.log(error);
-    }
+        {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + auth.token,
+        }
+      );
+      alert('Product Added Successfully!');
+      history.push('/');
+    } catch (error) {}
   };
 
   return (
@@ -102,9 +105,20 @@ const NewProduct = () => {
         errorText="Minimum price is $10"
         onInput={inputHandler}
       />
-      <Button type="submit" className="center" disabled={!formState.isValid}>
-        Add
-      </Button>
+      {error && (
+        <div className="center errorText">
+          <p>{error}</p>
+        </div>
+      )}
+      {isLoading ? (
+        <div className="center mt-2">
+          <CircularProgress color="secondary" />
+        </div>
+      ) : (
+        <Button type="submit" className="center" disabled={!formState.isValid}>
+          Add
+        </Button>
+      )}
     </form>
   );
 };

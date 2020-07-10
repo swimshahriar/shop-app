@@ -2,26 +2,27 @@ import React, { useState, useEffect } from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import ProductsList from '../components/ProductsList';
+import { useHttpClient } from '../../shared/hooks/http-hook';
 import './AllProducts.css';
-import Axios from 'axios';
 
 const AllProducts = () => {
+  const { sendRequest, isLoading } = useHttpClient();
   const [loadedProducts, setLoadedProduct] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
-    setIsLoading(true);
     try {
       const sendReq = async () => {
-        const { data } = await Axios.get('http://localhost:8000/api/product/');
+        const responseData = await sendRequest(
+          'http://localhost:8000/api/product/'
+        );
 
-        setLoadedProduct(data);
-        setIsLoading(false);
+        setLoadedProduct(responseData);
       };
       sendReq();
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [sendRequest]);
 
   return (
     <div className="all-products">
