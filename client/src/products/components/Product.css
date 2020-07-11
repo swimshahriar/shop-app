@@ -1,6 +1,8 @@
 .product {
   margin: 1rem;
   padding: 0 0.5rem;
+  min-width: 25rem;
+  width: 25vw;
 }
 
 .product__info {
@@ -42,4 +44,16 @@
   border: 2px solid #00796b;
   color: #fff;
   background-color: #00796b;
+}
+
+@media (max-width: 768px) {
+  .product {
+    width: 35vw;
+  }
+}
+
+@media (max-width: 520px) {
+  .product {
+    width: 70vw;
+  }
 }

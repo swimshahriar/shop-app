@@ -4,9 +4,3 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.26);
   margin: 1.5rem;
 }
-
-@media (max-width: 480px) {
-  .card {
-    width: 90%;
-  }
-}
