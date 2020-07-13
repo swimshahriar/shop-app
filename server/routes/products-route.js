@@ -6,8 +6,11 @@ const productsController = require('../controllers/products-controller');
 const checkAuth = require('../middlewares/check-auth');
 
 router.get('/', productsController.getProducts);
+router.get('/:pid', productsController.getProductById);
 
 router.use(checkAuth);
+
+router.get('/uid/:uid', productsController.getProductsByUserId);
 
 router.post(
   '/add',

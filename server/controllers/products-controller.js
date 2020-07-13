@@ -22,6 +22,45 @@ const getProducts = async (req, res, next) => {
   res.json(products);
 };
 
+// Get Products By Id
+const getProductById = async (req, res, next) => {
+  const productId = req.params.pid;
+  let products;
+  try {
+    products = await Product.findById(productId);
+  } catch (error) {
+    const err = new Error(error.message);
+    return next(err);
+  }
+
+  if (!products) {
+    const error = new Error('No products found!');
+    return next(error);
+  }
+
+  res.json(products);
+};
+
+// Get Products By User Id
+const getProductsByUserId = async (req, res, next) => {
+  const userId = req.params.uid;
+
+  let products;
+  try {
+    products = await Product.find({ userId });
+  } catch (error) {
+    const err = new Error(error.message);
+    return next(err);
+  }
+
+  if (!products) {
+    const error = new Error('No products found!');
+    return next(error);
+  }
+
+  res.json(products);
+};
+
 // Add a Product
 const addProduct = async (req, res, next) => {
   const { name, description, price, imageURL, userId } = req.body;
@@ -141,6 +180,8 @@ const deleteProduct = async (req, res, next) => {
 };
 
 exports.getProducts = getProducts;
+exports.getProductById = getProductById;
+exports.getProductsByUserId = getProductsByUserId;
 exports.addProduct = addProduct;
 exports.editProduct = editProduct;
 exports.deleteProduct = deleteProduct;
