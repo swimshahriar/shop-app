@@ -2,12 +2,12 @@ import React, { useContext, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { AuthContext } from '../../shared/context/auth-context';
+import { ShopContext } from '../../shared/context/ShopContext';
 import { useHttpClient } from '../../shared/hooks/http-hook';
 
 const DeleteProduct = (props) => {
-  const { sendRequest, isLoading, error, clearError } = useHttpClient();
-  const auth = useContext(AuthContext);
+  const { sendRequest, isLoading, error } = useHttpClient();
+  const auth = useContext(ShopContext);
   const history = useHistory();
   const pid = useParams().pid;
 

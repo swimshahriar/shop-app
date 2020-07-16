@@ -14,7 +14,7 @@ import UpdateProduct from './products/pages/UpdateProduct';
 import DeleteProduct from './products/pages/DeleteProduct';
 import Auth from './users/pages/Auth';
 import Dashboard from './users/pages/Dashboard';
-import { AuthContext } from './shared/context/auth-context';
+import { ShopContext } from './shared/context/ShopContext';
 import './App.css';
 
 const App = () => {
@@ -74,7 +74,7 @@ const App = () => {
     );
   }
   return (
-    <AuthContext.Provider
+    <ShopContext.Provider
       value={{
         isLogedIn: !!isToken,
         userId: userId,
@@ -87,7 +87,7 @@ const App = () => {
         <MainNavigation />
         <main>{routes}</main>
       </Router>
-    </AuthContext.Provider>
+    </ShopContext.Provider>
   );
 };
 

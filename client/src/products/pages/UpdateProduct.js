@@ -10,7 +10,7 @@ import {
   VALIDATOR_MINLENGTH,
 } from '../../shared/util/validators';
 import { useForm } from '../../shared/hooks/form-hook';
-import { AuthContext } from '../../shared/context/auth-context';
+import { ShopContext } from '../../shared/context/ShopContext';
 import { useHttpClient } from '../../shared/hooks/http-hook';
 import './ProductForm.css';
 
@@ -18,7 +18,7 @@ const UpdateProduct = () => {
   const pid = useParams().pid;
   const { isLoading, sendRequest, error, clearError } = useHttpClient();
   const [loadedProduct, setLoadedProduct] = useState();
-  const auth = useContext(AuthContext);
+  const auth = useContext(ShopContext);
   const history = useHistory();
 
   const [formState, inputHandler, setFormData] = useForm(
