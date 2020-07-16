@@ -11,6 +11,7 @@ import AllProducts from './products/pages/AllProducts';
 import Cart from './orders/pages/Cart';
 import NewProduct from './products/pages/NewProduct';
 import UpdateProduct from './products/pages/UpdateProduct';
+import DeleteProduct from './products/pages/DeleteProduct';
 import Auth from './users/pages/Auth';
 import Dashboard from './users/pages/Dashboard';
 import { AuthContext } from './shared/context/auth-context';
@@ -61,6 +62,9 @@ const App = () => {
         </Route>
         <Route path="/update/:pid" exact>
           <UpdateProduct />
+        </Route>
+        <Route path="/delete/:pid" exact>
+          <DeleteProduct />
         </Route>
         <Route path="/dashboard" exact>
           <Dashboard />

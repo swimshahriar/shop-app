@@ -1,16 +1,18 @@
-.add-product {
-  padding-top: 3rem;
+.product__options {
+  padding: 2rem;
+
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
+  align-items: center;
 }
 
-.add-product a {
-  text-decoration: none;
+.product__options a {
   font-size: 1.5rem;
-  color: #000;
+  text-decoration: none;
   background-color: #f8df01;
   padding: 1rem;
   border: 1px solid #000;
   border-radius: 1rem;
+  color: #000;
   box-shadow: 0 2px 0.8rem rgba(0, 0, 0, 0.26);
 }

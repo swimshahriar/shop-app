@@ -7,10 +7,9 @@ const checkAuth = require('../middlewares/check-auth');
 
 router.get('/', productsController.getProducts);
 router.get('/:pid', productsController.getProductById);
+router.get('/uid/:uid', productsController.getProductsByUserId);
 
 router.use(checkAuth);
-
-router.get('/uid/:uid', productsController.getProductsByUserId);
 
 router.post(
   '/add',
