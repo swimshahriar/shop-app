@@ -21,6 +21,8 @@ const App = () => {
   const [isToken, setIsToken] = useState(false);
   const [userId, setUserId] = useState(null);
   const [token, setToken] = useState(null);
+  const [cartData, setCartData] = useState({ items: [], totalPrice: 0 });
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const login = useCallback((userId, token) => {
     setIsToken(true);
@@ -33,6 +35,60 @@ const App = () => {
     setUserId(null);
     setToken(null);
   }, []);
+
+  // Cart functionality
+  const cart = (product) => {
+    //setting total price by adding the previous total with new product price
+    setTotalPrice(totalPrice + product.totalPrice);
+
+    // If it is the first item
+    if (cartData.items.length === 0) {
+      setCartData({
+        items: [...cartData.items, product],
+        totalPrice: totalPrice,
+      });
+    }
+
+    // If it is not the first item
+    if (cartData.items.length > 0) {
+      let existingItem = cartData.items.find(
+        (item) => product._id === item._id
+      );
+
+      // If it is an existing item in the cart
+      if (existingItem) {
+        // Getting the index of the existing item
+        const indexOfExistingProduct = cartData.items.findIndex(
+          (item) => product._id === item._id
+        );
+
+        // Updating quantity and totalPrice of the existing item
+        existingItem = {
+          ...existingItem,
+          quantity: existingItem.quantity + 1,
+          totalPrice: existingItem.price * (existingItem.quantity + 1),
+        };
+
+        // Getting an Array without the existing item
+        let restOfTheItem = cartData.items.filter(
+          (item) => product._id !== item._id
+        );
+
+        // Placing the updated existing item into its right index
+        restOfTheItem.splice(indexOfExistingProduct, 0, existingItem);
+
+        setCartData({
+          items: restOfTheItem,
+          totalPrice: totalPrice,
+        });
+      } else {
+        setCartData({
+          items: [...cartData.items, product],
+          totalPrice: totalPrice,
+        });
+      }
+    }
+  };
 
   let routes;
 
@@ -81,6 +137,8 @@ const App = () => {
         token: token,
         login: login,
         logout: logout,
+        cart: cartData,
+        cartFunction: cart,
       }}
     >
       <Router>

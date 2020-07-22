@@ -1,13 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import Card from '../../shared/components/UIElements/Card';
 import Image from '../../shared/components/UIElements/Image';
 import Button from '../../shared/components/FormElements/Button';
+import { ShopContext } from '../../shared/context/ShopContext';
 import './Product.css';
 
 const Product = (props) => {
-  const addToCartHandler = (event) => {
-    event.preventDefault();
+  const shopCart = useContext(ShopContext);
+  const addToCartHandler = () => {
+    shopCart.cartFunction({
+      ...props.product,
+      quantity: 1,
+      totalPrice: props.price,
+    });
   };
 
   return (

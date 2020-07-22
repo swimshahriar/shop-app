@@ -4,8 +4,9 @@ import { NavLink } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import './NavLinks.css';
 
-const NavLinks = (props) => {
+const NavLinks = () => {
   const auth = useContext(ShopContext);
+
   return (
     <ul className="nav-links">
       <li>
@@ -28,6 +29,9 @@ const NavLinks = (props) => {
           <button onClick={auth.logout}>Logout</button>
         </li>
       )}
+      <li>
+        <NavLink to="/cart">Cart ({auth.cart.items.length})</NavLink>
+      </li>
     </ul>
   );
 };

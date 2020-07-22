@@ -1,0 +1,15 @@
+.cart {
+  padding: 2rem;
+}
+
+table {
+  font-size: 1.6rem;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 1.5rem 2rem;
+}
