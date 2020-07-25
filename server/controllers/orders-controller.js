@@ -1,8 +1,11 @@
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { v4: uuidv4 } = require('uuid');
 
 const Order = require('../models/orders-model');
 const User = require('../models/users-model');
+const productsModel = require('../models/products-model');
 
 // Get All the Orders
 const getOrders = async (req, res, next) => {
@@ -18,6 +21,40 @@ const getOrders = async (req, res, next) => {
     res.json({ message: 'No orders Found!😭' });
   }
   res.json({ orders: orders });
+};
+
+// Make payment
+const makePayment = () => {
+  const { product, token } = req.body;
+  const idempontencyKey = uuidv4();
+
+  return stripe.customers
+    .create({
+      email: token.email,
+      source: token.id,
+    })
+    .then((customer) => {
+      stripe.charges.create(
+        {
+          amount: product.totalPrice * 100,
+          currency: 'usd',
+          customer: customer.id,
+          receipt_email: token.email,
+          shipping: {
+            name: token.card.name,
+            address: {
+              country: token.card.address_country,
+            },
+          },
+        },
+        { idempontencyKey }
+      );
+    })
+    .then((result) => res.json(result))
+    .catch((error) => {
+      const err = new Error(error.message);
+      return next(err);
+    });
 };
 
 // Place an Order
@@ -141,6 +178,7 @@ const deleteOrder = async (req, res, next) => {
 };
 
 exports.getOrders = getOrders;
+exports.makePayment = makePayment;
 exports.placeOrder = placeOrder;
 exports.editOrderStatus = editOrderStatus;
 exports.deleteOrder = deleteOrder;

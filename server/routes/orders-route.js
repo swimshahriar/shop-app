@@ -9,6 +9,8 @@ router.get('/', ordersController.getOrders);
 
 router.use(checkAuth);
 
+router.post('/payment', ordersController.makePayment);
+
 router.post(
   '/place',
   [

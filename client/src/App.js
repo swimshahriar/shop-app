@@ -125,6 +125,9 @@ const App = () => {
         <Route path="/dashboard" exact>
           <Dashboard />
         </Route>
+        <Route path="/cart" exact>
+          <Cart />
+        </Route>
         <Redirect to="/" />
       </Switch>
     );

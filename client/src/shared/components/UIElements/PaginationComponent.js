@@ -19,8 +19,6 @@ const PaginationComponent = ({
     setCurrentPage(value);
   };
 
-  console.log(pageNumbers.length);
-
   return (
     <div className="pagination">
       <Pagination
