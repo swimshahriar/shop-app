@@ -128,6 +128,12 @@ const App = () => {
         <Route path="/cart" exact>
           <Cart />
         </Route>
+        <Route path="/success" exact>
+          <Cart />
+        </Route>
+        <Route path="/cancel" exact>
+          <Cart />
+        </Route>
         <Redirect to="/" />
       </Switch>
     );

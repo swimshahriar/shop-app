@@ -24,37 +24,67 @@ const getOrders = async (req, res, next) => {
 };
 
 // Make payment
-const makePayment = () => {
-  const { product, token } = req.body;
-  const idempontencyKey = uuidv4();
+// const makePayment = () => {
+//   const { product, token } = req.body;
+//   const idempontencyKey = uuidv4();
 
-  return stripe.customers
-    .create({
-      email: token.email,
-      source: token.id,
-    })
-    .then((customer) => {
-      stripe.charges.create(
+//   return stripe.customers
+//     .create({
+//       email: token.email,
+//       source: token.id,
+//     })
+//     .then((customer) => {
+//       stripe.charges.create(
+//         {
+//           amount: product.totalPrice * 100,
+//           currency: 'usd',
+//           customer: customer.id,
+//           receipt_email: token.email,
+//           shipping: {
+//             name: token.card.name,
+//             address: {
+//               country: token.card.address_country,
+//             },
+//           },
+//         },
+//         { idempontencyKey }
+//       );
+//     })
+//     .then((result) => res.json(result))
+//     .catch((error) => {
+//       const err = new Error(error.message);
+//       return next(err);
+//     });
+// };
+
+const makePayment = async (req, res, next) => {
+  const { totalPrice, quantity, products } = req.body;
+  let session;
+  try {
+    session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
         {
-          amount: product.totalPrice * 100,
-          currency: 'usd',
-          customer: customer.id,
-          receipt_email: token.email,
-          shipping: {
-            name: token.card.name,
-            address: {
-              country: token.card.address_country,
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'T-shirt',
             },
+            unit_amount: totalPrice * 100,
           },
+          quantity: quantity,
         },
-        { idempontencyKey }
-      );
-    })
-    .then((result) => res.json(result))
-    .catch((error) => {
-      const err = new Error(error.message);
-      return next(err);
+      ],
+      mode: 'payment',
+      success_url: 'http://localhost:3000/',
+      cancel_url: 'http://localhost:3000/cart',
     });
+  } catch (error) {
+    const err = new Error(error.message);
+    return next(err);
+  }
+
+  res.json({ session_id: session.id });
 };
 
 // Place an Order

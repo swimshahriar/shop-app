@@ -1,30 +1,36 @@
 import React, { useContext } from 'react';
 import ReactStripeCheckout from 'react-stripe-checkout';
+import { loadStripe } from '@stripe/stripe-js';
 
 import { ShopContext } from '../../shared/context/ShopContext';
 
 import './Cart.css';
 
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUB_KEY);
+
 const Cart = () => {
   const shopCart = useContext(ShopContext);
 
-  const makePayment = async (token) => {
-    let response;
+  const makePayment = async (event) => {
     try {
-      response = await fetch('http://localhost:8000/api/order/payment', {
+      const response = await fetch('http://localhost:8000/api/order/payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + shopCart.token,
         },
         body: JSON.stringify({
-          token,
-          product: {
-            totalPrice: shopCart.cart.totalPrice,
-          },
+          totalPrice: shopCart.cart.totalPrice,
+          quantity: shopCart.cart.items.length,
+          products: shopCart.cart.items,
         }),
       });
-      return JSON.parse(response);
+      const { session_id: sessionId } = await response.json();
+
+      const stripe = await stripePromise;
+      const { error } = await stripe.redirectToCheckout({
+        sessionId,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -62,12 +68,9 @@ const Cart = () => {
             </tfoot>
           </table>
           <div>
-            <ReactStripeCheckout
-              stripeKey={process.env.REACT_APP_STRIPE_PUB_KEY}
-              name={`Pay ${shopCart.cart.totalPrice}`}
-              token={makePayment}
-              amount={shopCart.cart.totalPrice * 100}
-            />
+            <button role="link" onClick={makePayment}>
+              Checkout
+            </button>
           </div>
         </React.Fragment>
       )}
