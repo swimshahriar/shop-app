@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -8,15 +8,22 @@ import {
 
 import MainNavigation from './shared/Header/MainNavigation';
 import AllProducts from './products/pages/AllProducts';
-import Cart from './orders/pages/Cart';
-import NewProduct from './products/pages/NewProduct';
-import UpdateProduct from './products/pages/UpdateProduct';
-import DeleteProduct from './products/pages/DeleteProduct';
-import Auth from './users/pages/Auth';
-import Dashboard from './users/pages/Dashboard';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { ShopContext } from './shared/context/ShopContext';
 import { useAuth } from './shared/hooks/auth-hook';
 import './App.css';
+
+// lazy import components
+const Cart = React.lazy(() => import('./orders/pages/Cart'));
+const NewProduct = React.lazy(() => import('./products/pages/NewProduct'));
+const Dashboard = React.lazy(() => import('./users/pages/Dashboard'));
+const UpdateProduct = React.lazy(() =>
+  import('./products/pages/UpdateProduct')
+);
+const DeleteProduct = React.lazy(() =>
+  import('./products/pages/DeleteProduct')
+);
+const Auth = React.lazy(() => import('./users/pages/Auth'));
 
 const App = () => {
   const { token, isToken, userId, login, logout } = useAuth();
@@ -139,7 +146,17 @@ const App = () => {
     >
       <Router>
         <MainNavigation />
-        <main>{routes}</main>
+        <main>
+          <Suspense
+            fallback={
+              <div className="center">
+                <CircularProgress />
+              </div>
+            }
+          >
+            {routes}
+          </Suspense>
+        </main>
       </Router>
     </ShopContext.Provider>
   );

@@ -36,12 +36,12 @@ export const useAuth = () => {
     if (
       storedData &&
       storedData.token &&
-      new Date(storedData.tokenExpirationTime) > new Date()
+      new Date(storedData.expiration) > new Date()
     ) {
       login(
         storedData.userId,
         storedData.token,
-        new Date(storedData.tokenExpirationTime)
+        new Date(storedData.expiration)
       );
     }
   }, [login]);
