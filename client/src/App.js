@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -15,26 +15,13 @@ import DeleteProduct from './products/pages/DeleteProduct';
 import Auth from './users/pages/Auth';
 import Dashboard from './users/pages/Dashboard';
 import { ShopContext } from './shared/context/ShopContext';
+import { useAuth } from './shared/hooks/auth-hook';
 import './App.css';
 
 const App = () => {
-  const [isToken, setIsToken] = useState(false);
-  const [userId, setUserId] = useState(null);
-  const [token, setToken] = useState(null);
+  const { token, isToken, userId, login, logout } = useAuth();
   const [cartData, setCartData] = useState({ items: [], totalPrice: 0 });
   const [totalPrice, setTotalPrice] = useState(0);
-
-  const login = useCallback((userId, token) => {
-    setIsToken(true);
-    setUserId(userId);
-    setToken(token);
-  }, []);
-
-  const logout = useCallback(() => {
-    setIsToken(false);
-    setUserId(null);
-    setToken(null);
-  }, []);
 
   // Cart functionality
   const cart = (product) => {
@@ -141,7 +128,7 @@ const App = () => {
   return (
     <ShopContext.Provider
       value={{
-        isLogedIn: !!isToken,
+        isLogedIn: !!token,
         userId: userId,
         token: token,
         login: login,
