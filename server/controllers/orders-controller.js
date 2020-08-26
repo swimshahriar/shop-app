@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
+// @ts-ignore
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { v4: uuidv4 } = require('uuid');
 
 const Order = require('../models/orders-model');
 const User = require('../models/users-model');
@@ -58,7 +58,8 @@ const getOrders = async (req, res, next) => {
 // };
 
 const makePayment = async (req, res, next) => {
-  const { totalPrice, quantity, products } = req.body;
+  const { totalPrice, products } = req.body;
+
   let session;
   try {
     session = await stripe.checkout.sessions.create({
@@ -68,23 +69,23 @@ const makePayment = async (req, res, next) => {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: 'T-shirt',
+              name: 'Your Total',
             },
             unit_amount: totalPrice * 100,
           },
-          quantity: quantity,
+          quantity: 1,
         },
       ],
       mode: 'payment',
-      success_url: 'http://localhost:3000/',
-      cancel_url: 'http://localhost:3000/cart',
+      success_url: 'https://shop-app01.netlify.app/',
+      cancel_url: 'https://shop-app01.netlify.app/',
     });
   } catch (error) {
     const err = new Error(error.message);
     return next(err);
   }
 
-  res.json({ session_id: session.id });
+  res.json({ session_id: session.id, session });
 };
 
 // Place an Order

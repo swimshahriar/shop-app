@@ -40,6 +40,7 @@ export const useForm = (initialInputs, initialValidity) => {
   });
 
   const inputHandler = useCallback((id, value, isValid) => {
+    // @ts-ignore
     dispatch({
       type: 'INPUT_CHANGE',
       value: value,
@@ -49,6 +50,7 @@ export const useForm = (initialInputs, initialValidity) => {
   }, []);
 
   const setFormData = useCallback((inputData, formValidity) => {
+    // @ts-ignore
     dispatch({
       type: 'SET_DATA',
       inputs: inputData,

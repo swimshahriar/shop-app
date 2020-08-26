@@ -8,13 +8,6 @@ import './Product.css';
 
 const Product = (props) => {
   const shopCart = useContext(ShopContext);
-  const addToCartHandler = () => {
-    shopCart.cartFunction({
-      ...props.product,
-      quantity: 1,
-      totalPrice: props.price,
-    });
-  };
 
   return (
     <Card>
@@ -35,7 +28,11 @@ const Product = (props) => {
         </div>
 
         <div className="product__btn">
-          <Button type="button" onClick={addToCartHandler} className="btn-cart">
+          <Button
+            type="button"
+            onClick={() => shopCart.addToCart(props.product)}
+            className="btn-cart"
+          >
             Add To Cart
           </Button>
         </div>

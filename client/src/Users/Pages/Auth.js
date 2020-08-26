@@ -64,7 +64,7 @@ const Auth = () => {
     if (!isLoginMode) {
       try {
         const responseData = await sendRequest(
-          'http://localhost:8000/api/user/signup',
+          'https://shop-app01.herokuapp.com/api/user/signup',
           'POST',
           JSON.stringify({
             name: formState.inputs.name.value,
@@ -84,7 +84,7 @@ const Auth = () => {
     } else {
       try {
         const responseData = await sendRequest(
-          'http://localhost:8000/api/user/login',
+          'https://shop-app01.herokuapp.com/api/user/login',
           'POST',
           JSON.stringify({
             email: formState.inputs.email.value,

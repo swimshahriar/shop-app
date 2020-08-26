@@ -7,4 +7,6 @@ export const ShopContext = createContext({
   cart: { items: [], totalPrice: 0 },
   login: () => {},
   logout: () => {},
+  addToCart: (product) => {},
+  removeFromCart: (productId) => {},
 });

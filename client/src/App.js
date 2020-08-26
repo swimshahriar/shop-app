@@ -28,60 +28,59 @@ const Auth = React.lazy(() => import('./users/pages/Auth'));
 const App = () => {
   const { token, isToken, userId, login, logout } = useAuth();
   const [cartData, setCartData] = useState({ items: [], totalPrice: 0 });
-  const [totalPrice, setTotalPrice] = useState(0);
 
   // Cart functionality
-  const cart = (product) => {
-    //setting total price by adding the previous total with new product price
-    setTotalPrice(totalPrice + product.totalPrice);
 
-    // If it is the first item
-    if (cartData.items.length === 0) {
-      setCartData({
-        items: [...cartData.items, product],
-        totalPrice: totalPrice,
+  // add to cart
+  const addToCart = (product) => {
+    const updatedCart = [...cartData.items];
+    let totalPrice = 0;
+
+    const updatedItemIndex = updatedCart.findIndex(
+      (item) => item._id === product._id
+    );
+
+    if (updatedItemIndex < 0) {
+      updatedCart.push({
+        ...product,
+        quantity: 1,
+        total: product.price,
       });
+    } else {
+      const updatedItem = updatedCart[updatedItemIndex];
+
+      updatedItem.quantity++;
+      updatedItem.total = updatedItem.quantity * updatedItem.price;
+      updatedCart[updatedItemIndex] = updatedItem;
     }
 
-    // If it is not the first item
-    if (cartData.items.length > 0) {
-      let existingItem = cartData.items.find(
-        (item) => product._id === item._id
-      );
+    updatedCart.forEach((item) => +(totalPrice += item.total));
 
-      // If it is an existing item in the cart
-      if (existingItem) {
-        // Getting the index of the existing item
-        const indexOfExistingProduct = cartData.items.findIndex(
-          (item) => product._id === item._id
-        );
+    setCartData({ items: updatedCart, totalPrice: totalPrice });
+  };
 
-        // Updating quantity and totalPrice of the existing item
-        existingItem = {
-          ...existingItem,
-          quantity: existingItem.quantity + 1,
-          totalPrice: existingItem.price * (existingItem.quantity + 1),
-        };
+  // remove from cart
+  const removeFromCart = (productId) => {
+    const updatedCart = [...cartData.items];
+    let totalPrice = 0;
 
-        // Getting an Array without the existing item
-        let restOfTheItem = cartData.items.filter(
-          (item) => product._id !== item._id
-        );
+    const updatedItemIndex = updatedCart.findIndex(
+      (item) => item._id === productId
+    );
 
-        // Placing the updated existing item into its right index
-        restOfTheItem.splice(indexOfExistingProduct, 0, existingItem);
+    const updatedItem = updatedCart[updatedItemIndex];
+    updatedItem.quantity--;
 
-        setCartData({
-          items: restOfTheItem,
-          totalPrice: totalPrice,
-        });
-      } else {
-        setCartData({
-          items: [...cartData.items, product],
-          totalPrice: totalPrice,
-        });
-      }
+    if (updatedItem.quantity <= 0) {
+      updatedCart.splice(updatedItemIndex, 1);
+    } else {
+      updatedItem.total = updatedItem.quantity * updatedItem.price;
+      updatedCart[updatedItemIndex] = updatedItem;
     }
+
+    updatedCart.forEach((item) => +(totalPrice += item.total));
+
+    setCartData({ items: updatedCart, totalPrice: totalPrice });
   };
 
   let routes;
@@ -141,7 +140,8 @@ const App = () => {
         login: login,
         logout: logout,
         cart: cartData,
-        cartFunction: cart,
+        addToCart: addToCart,
+        removeFromCart: removeFromCart,
       }}
     >
       <Router>

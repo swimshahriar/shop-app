@@ -20,7 +20,7 @@ const Dashboard = () => {
     try {
       const sendReq = async () => {
         const responseData = await sendRequest(
-          `http://localhost:8000/api/product/uid/${auth.userId}`
+          `https://shop-app01.herokuapp.com/api/product/uid/${auth.userId}`
         );
 
         setLoadedProducts(responseData);
@@ -42,7 +42,7 @@ const Dashboard = () => {
   const deleteHandler = async (pid) => {
     try {
       await sendRequest(
-        `http://localhost:8000/api/product/delete/${pid}`,
+        `https://shop-app01.herokuapp.com/api/product/delete/${pid}`,
         'DELETE',
         {},
         {

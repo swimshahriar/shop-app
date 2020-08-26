@@ -39,7 +39,7 @@ const UpdateProduct = () => {
     const fetchProduct = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:8000/api/product/${pid}`
+          `https://shop-app01.herokuapp.com/api/product/${pid}`
         );
         setLoadedProduct(responseData);
 
@@ -67,7 +67,7 @@ const UpdateProduct = () => {
 
     try {
       await sendRequest(
-        `http://localhost:8000/api/product/edit/${pid}`,
+        `https://shop-app01.herokuapp.com/api/product/edit/${pid}`,
         'PATCH',
         JSON.stringify({
           description: formState.inputs.description.value,

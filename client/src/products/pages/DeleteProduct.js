@@ -15,7 +15,7 @@ const DeleteProduct = (props) => {
     const sendReq = async () => {
       try {
         await sendRequest(
-          `http://localhost:8000/api/product/delete/${pid}`,
+          `https://shop-app01.herokuapp.com/api/product/delete/${pid}`,
           'DELETE',
           {},
           {

@@ -1,9 +1,8 @@
 import React, { useContext } from 'react';
-import ReactStripeCheckout from 'react-stripe-checkout';
 import { loadStripe } from '@stripe/stripe-js';
 
 import { ShopContext } from '../../shared/context/ShopContext';
-
+import Button from '../../shared/components/FormElements/Button';
 import './Cart.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUB_KEY);
@@ -11,26 +10,31 @@ const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUB_KEY);
 const Cart = () => {
   const shopCart = useContext(ShopContext);
 
+  // stripe makePayment
   const makePayment = async (event) => {
     try {
-      const response = await fetch('http://localhost:8000/api/order/payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + shopCart.token,
-        },
-        body: JSON.stringify({
-          totalPrice: shopCart.cart.totalPrice,
-          quantity: shopCart.cart.items.length,
-          products: shopCart.cart.items,
-        }),
-      });
+      const response = await fetch(
+        'https://shop-app01.herokuapp.com/api/order/payment',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + shopCart.token,
+          },
+          body: JSON.stringify({
+            totalPrice: shopCart.cart.totalPrice,
+            products: shopCart.cart.items,
+          }),
+        }
+      );
       const { session_id: sessionId } = await response.json();
 
       const stripe = await stripePromise;
       const { error } = await stripe.redirectToCheckout({
         sessionId,
       });
+
+      console.log(error);
     } catch (error) {
       console.log(error);
     }
@@ -41,7 +45,7 @@ const Cart = () => {
       {shopCart.cart.items.length === 0 && <h1>No Products Found!</h1>}
       {shopCart.cart.items.length !== 0 && (
         <React.Fragment>
-          <table>
+          <table style={{ marginRight: '10px' }}>
             <thead>
               <tr>
                 <th>Name</th>
@@ -54,23 +58,33 @@ const Cart = () => {
                 return (
                   <tr key={i}>
                     <td>{product.name}</td>
-                    <td>x {product.quantity}</td>
-                    <td>${product.totalPrice}</td>
+                    <td>
+                      <Button
+                        onClick={() => shopCart.removeFromCart(product._id)}
+                      >
+                        -
+                      </Button>{' '}
+                      {product.quantity}{' '}
+                      <Button onClick={() => shopCart.addToCart(product)}>
+                        +
+                      </Button>
+                    </td>
+                    <td>${product.total}</td>
                   </tr>
                 );
               })}
             </tbody>
             <tfoot>
               <tr>
-                <td colSpan="2">Total:</td>
+                <td colSpan={2}>Total:</td>
                 <td>${shopCart.cart.totalPrice}</td>
               </tr>
             </tfoot>
           </table>
           <div>
-            <button role="link" onClick={makePayment}>
+            <Button role="link" onClick={makePayment}>
               Checkout
-            </button>
+            </Button>
           </div>
         </React.Fragment>
       )}

@@ -47,7 +47,7 @@ const NewProduct = () => {
 
     try {
       await sendRequest(
-        'http://localhost:8000/api/product/add',
+        'https://shop-app01.herokuapp.com/api/product/add',
         'POST',
         JSON.stringify({
           name: formState.inputs.productName.value,

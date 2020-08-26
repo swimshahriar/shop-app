@@ -16,7 +16,7 @@ const AllProducts = () => {
     try {
       const sendReq = async () => {
         const responseData = await sendRequest(
-          'http://localhost:8000/api/product/'
+          'https://shop-app01.herokuapp.com/api/product/'
         );
 
         setLoadedProducts(responseData);
